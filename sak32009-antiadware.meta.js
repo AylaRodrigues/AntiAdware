@@ -3,7 +3,7 @@
 // @namespace     sak32009-antiadware
 // @description   Don't get unwanted applications while downloading with AntiAdware!
 // @author        Sak32009
-// @version       1.0.0
+// @version       1.0.1
 // @license       MIT
 // @homepageURL   https://github.com/Sak32009/AntiAdware
 // @supportURL    https://github.com/Sak32009/AntiAdware

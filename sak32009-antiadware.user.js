@@ -3,7 +3,7 @@
 // @namespace     sak32009-antiadware
 // @description   Don't get unwanted applications while downloading with AntiAdware!
 // @author        Sak32009
-// @version       1.0.0
+// @version       1.0.1
 // @license       MIT
 // @homepageURL   https://github.com/Sak32009/AntiAdware
 // @supportURL    https://github.com/Sak32009/AntiAdware
@@ -34,21 +34,29 @@ class Main {
         this.rules = [
             // DOUPLOADS.COM
             {
-                host: "douploads.com/.",
+                host: "douploads.com",
                 hide: [{
                     selector: "input#chkIsAdd",
                     closest: "div"
                 }],
-                uncheck: "input#chkIsAdd"
+                uncheck: ["input#chkIsAdd"]
             },
             // DAYLYUPLOADS
             {
-                host: "dailyuploads.net/.",
+                host: "dailyuploads.net",
                 hide: [{
                     selector: "input#chkIsAdd",
                     closest: "label"
                 }],
-                uncheck: "input#chkIsAdd"
+                uncheck: ["input#chkIsAdd"]
+            },
+            // GET.ADOBE.COM
+            {
+                host: "get\\d?.adobe.com",
+                hide: [{
+                    selector: ".ContentColumn.ContentColumn-2"
+                }],
+                uncheck: ["#offerCheckbox", "#offerCheckbox1"]
             }
         ];
 
@@ -84,7 +92,7 @@ class Main {
 
         // HIDE FUNCTION
         if ("hide" in data) {
-            this.log("Have 'hide' function!", this.hide);
+            this.log("Have 'hide' function!", data.hide);
             const hideInterval = window.setInterval(() => {
                 $.each(data.hide, (_index, _values) => {
                     let $selector = $(_values.selector);
@@ -99,9 +107,11 @@ class Main {
 
         // UNCHECK FUNCTION
         if ("uncheck" in data) {
-            this.log("Have 'uncheck' function! Selector: ", data.uncheck);
+            this.log("Have 'uncheck' function!", data.uncheck);
             const uncheckInterval = window.setInterval(() => {
-                $(data.uncheck).attr("checked", false).prop("checked", false);
+                $.each(data.uncheck, function(_index, _values){
+                    $(_values).attr("checked", false).prop("checked", false);
+                });
             }, this.timeInterval);
         }
 
