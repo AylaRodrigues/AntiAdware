@@ -3,7 +3,7 @@
 // @namespace     sak32009-antiadware
 // @description   Don't get unwanted applications while downloading with AntiAdware!
 // @author        Sak32009
-// @version       1.0.1
+// @version       1.0.2
 // @license       MIT
 // @homepageURL   https://github.com/Sak32009/AntiAdware
 // @supportURL    https://github.com/Sak32009/AntiAdware
@@ -14,7 +14,7 @@
 // @match         *://*/*
 // @require       https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js
 // @grant         none
-// @run-at        document-start
+// @run-at        document-end
 // @noframes
 // ==/UserScript==
 
@@ -23,13 +23,6 @@ class Main {
 
     // CONSTRUCTOR
     constructor() {
-
-        // DEBUG
-        this.debug = false;
-
-        // TIME INTERVAL
-        this.timeInterval = 100;
-
         // RULES
         this.rules = [
             // DOUPLOADS.COM
@@ -39,7 +32,8 @@ class Main {
                     selector: "input#chkIsAdd",
                     closest: "div"
                 }],
-                uncheck: ["input#chkIsAdd"]
+                uncheck: ["input#chkIsAdd"],
+                intervalCheck: false
             },
             // DAYLYUPLOADS
             {
@@ -48,7 +42,8 @@ class Main {
                     selector: "input#chkIsAdd",
                     closest: "label"
                 }],
-                uncheck: ["input#chkIsAdd"]
+                uncheck: ["input#chkIsAdd"],
+                intervalCheck: false
             },
             // GET.ADOBE.COM
             {
@@ -56,70 +51,81 @@ class Main {
                 hide: [{
                     selector: ".ContentColumn.ContentColumn-2"
                 }],
-                uncheck: ["#offerCheckbox", "#offerCheckbox1"]
+                uncheck: ["#offerCheckbox", "#offerCheckbox1"],
+                intervalCheck: false
             }
         ];
-
+        // FIND
+        this.find = {};
+        // TIME INTERVAL
+        this.timeInterval = 100;
         // RUN
         this.run();
-
     }
 
     // RUN
     run() {
-
+        // SELF
         const self = this;
+        // GET URL
         const url = window.location.href;
-
-        this.log("Yeah Bitch! Eat my url", url);
-
+        // CHECK
         $.each(this.rules, (_index, _values) => {
             const host = _values.host;
-            const re = new RegExp(host, "g");
-            if (re.test(url) === true) {
-                self.log("Find rules.. ", host);
-                self.apply(_values);
+            if (new RegExp(host, "g").test(url) === true) {
+                self.find = _values;
+                self.apply();
                 return true;
             }
         });
-
     }
 
     // APPLY
-    apply(data) {
-
-        const self = this;
-
-        // HIDE FUNCTION
-        if ("hide" in data) {
-            this.log("Have 'hide' function!", data.hide);
-            const hideInterval = window.setInterval(() => {
-                $.each(data.hide, (_index, _values) => {
-                    let $selector = $(_values.selector);
-                    const closest = _values.closest;
-                    if (typeof closest !== "undefined") {
-                        $selector = $selector.closest(closest);
-                    }
-                    $selector.attr("style", "display: none !important");
-                });
-            }, this.timeInterval);
-        }
-
+    apply() {
         // UNCHECK FUNCTION
-        if ("uncheck" in data) {
-            this.log("Have 'uncheck' function!", data.uncheck);
-            const uncheckInterval = window.setInterval(() => {
-                $.each(data.uncheck, function(_index, _values){
-                    $(_values).attr("checked", false).prop("checked", false);
-                });
-            }, this.timeInterval);
-        }
-
+        this.applyUncheck();
+        // HIDE FUNCTION
+        this.applyHide();
+        // INTERVAL CHECK
+        this.intervalCheck();
     }
 
-    // LOG
-    log(...args) {
-        return this.debug ? console.log(args) : false;
+    // HIDE
+    applyHide() {
+        var self = this;
+        if ("hide" in this.find) {
+            $.each(this.find.hide, (_index, _values) => {
+                let $selector = $(_values.selector);
+                const closest = _values.closest;
+                if (typeof closest !== "undefined") {
+                    $selector = $selector.closest(closest);
+                }
+                $selector.attr("style", "display: none !important");
+            });
+        }
+    }
+
+    // UNCHECK
+    applyUncheck() {
+        var self = this;
+        if ("uncheck" in this.find) {
+            $.each(this.find.uncheck, function (_index, _values) {
+                $(_values).attr("checked", false).prop("checked", false);
+            });
+        }
+    }
+
+    // INTERVAL CHECK
+    intervalCheck() {
+        var self = this;
+        if (this.find.intervalCheck === true) {
+            const intCheck = window.setInterval(function () {
+                // UNCHECK FUNCTION
+                self.applyUncheck();
+                // HIDE FUNCTION
+                self.applyHide();
+            }, this.timeInterval);
+        }
     }
 
 }

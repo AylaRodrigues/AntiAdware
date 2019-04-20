@@ -1,4 +1,4 @@
-![AntiAdware](https://raw.githubusercontent.com/Sak32009/AntiAdware/master/sak32009-antiadware-64.png "AntiAdware") **AntiAdware**
+![AntiAdware](https://raw.githubusercontent.com/Sak32009/AntiAdware/master/sak32009-antiadware-32.png "AntiAdware") **AntiAdware**
 > Don't get unwanted applications while downloading with AntiAdware!
 
 ------------
